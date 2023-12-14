@@ -1,27 +1,69 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"strconv"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
+
+var successColor = color.New(color.FgHiGreen).Add(color.Bold)
+var errorColor = color.New(color.FgHiRed).Add(color.Bold)
+
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
 
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Create a Sitri project.",
+	Long: `Create a Sitri project.
+	
+	This will also initialize a git repository, unless specified.
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("init called")
+		cwd, err := os.Getwd()
+
+		if err != nil {
+			errorColor.Println("❌ An error occured when getting the directory you want to initalize!")
+			errorColor.Println(err)
+			return
+		}
+		println("🍊 Initializing a Sitri project...")
+		println("Initialization at " + cwd)
+		os.Mkdir(".sitri", os.ModeDir)
+		os.Mkdir(".sitri/commits", os.ModeDir)
+		file, ferr := os.Create(".sitri/projectInfo")
+
+		if ferr != nil {
+			errorColor.Println("❌ Could not create project info!")
+			errorColor.Println(ferr)
+			return
+		}
+
+		var noGit = contains(args, "-g")
+		if !noGit {
+			noGit = contains(args, "-noGit")
+		}
+		if !noGit {
+			exec.Command("git", "init", cwd)
+		}
+		forGit := strconv.FormatBool(noGit)
+		file.WriteString(fmt.Sprintf(`[sitriInfo v1]
+gitDisabled: %s
+		`, forGit))
 	},
 }
 
@@ -36,5 +78,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	initCmd.Flags().BoolP("noGit", "g", false, "Don't initialize a git repo.")
 }

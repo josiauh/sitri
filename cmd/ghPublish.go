@@ -5,24 +5,34 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"strings"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
+
+var bsuccessColor = color.New(color.FgHiGreen).Add(color.Bold)
+var berrorColor = color.New(color.FgHiRed).Add(color.Bold)
 
 // ghPublishCmd represents the ghPublish command
 var ghPublishCmd = &cobra.Command{
 	Use:   "ghPublish",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Publish your repository to github. ",
+	Long:  `Publish your repository to github. If a non-git project is detected, it will make a git repo.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Publishing to github...")
-		exec.Command("gh", "repo", "create")
+		sitriInfoB, err := os.ReadFile(".sitri/projectInfo")
+		sitriInfoS := string(sitriInfoB)
+		sitriInfo := strings.Split(sitriInfoS, "\n")
+		if err != nil {
+			berrorColor.Printf("❌ Couldn't get the project info! Try re-initializing your Sitri project.")
+		}
+		if sitriInfo[1] == "gitDisabled: true" {
+			exec.Command("git", "init")
+		}
+		exec.Command("gh", "repo", "create", "--public", "--push", "--source", ".")
 	},
 }
 

@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "cli",
+	Use:   "sitri",
 	Short: "Sitri is a VSC cli.",
 	Long: `Sitri is a VSC cli that works locally and with git.
 	

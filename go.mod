@@ -1,4 +1,4 @@
-module sitri/cli
+module sitriproject/sitri
 
 go 1.21.1
 
