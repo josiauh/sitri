@@ -104,17 +104,17 @@ jobs:
         uses: actions/download-artifact@v2.1.1
         with:
             name: Sitri-windows
-            path: dist/sitri-win
+            path: dist
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.1.1
         with:
             name: Sitri-mac
-            path: dist/sitri-mac
+            path: dist
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.1.1
         with:
             name: Sitri-linux
-            path: dist/sitri-linux
+            path: dist
       - name: Upload as release       
         run: |
             gh release upload sitri --clobber dist/*

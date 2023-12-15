@@ -39,7 +39,7 @@ var initCmd = &cobra.Command{
 		if err != nil {
 			errorColor.Println("❌ An error occured when getting the directory you want to initalize!")
 			errorColor.Println(err)
-			return
+			os.Exit(1)
 		}
 		println("🍊 Initializing a Sitri project...")
 		println("Initialization at " + cwd)
@@ -50,7 +50,7 @@ var initCmd = &cobra.Command{
 		if ferr != nil {
 			errorColor.Println("❌ Could not create project info!")
 			errorColor.Println(ferr)
-			return
+			os.Exit(1)
 		}
 
 		var noGit = contains(args, "-g")
@@ -58,7 +58,17 @@ var initCmd = &cobra.Command{
 			noGit = contains(args, "-noGit")
 		}
 		if !noGit {
-			exec.Command("git", "init", cwd)
+			exec.Command("\"C:/Program Files/Git/cmd/git.exe\"", "init", cwd)
+			f, err := os.Create(".gitignore")
+			if err != nil {
+				errorColor.Println("❌ Could not create a gitignore!")
+				errorColor.Println(err)
+				os.Exit(1)
+			}
+			f.Write([]byte(`
+			# 🍊 Sitri's gitignore
+			.sitri
+			`))
 		}
 		forGit := strconv.FormatBool(noGit)
 		file.WriteString(fmt.Sprintf(`[sitriInfo v1]

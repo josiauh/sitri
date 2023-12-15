@@ -28,9 +28,10 @@ var ghPublishCmd = &cobra.Command{
 		sitriInfo := strings.Split(sitriInfoS, "\n")
 		if err != nil {
 			berrorColor.Printf("❌ Couldn't get the project info! Try re-initializing your Sitri project.")
+			os.Exit(1)
 		}
 		if sitriInfo[1] == "gitDisabled: true" {
-			exec.Command("git", "init")
+			exec.Command("\"C:/Program Files/Git/cmd/git.exe\"", "init")
 		}
 		exec.Command("gh", "repo", "create", "--public", "--push", "--source", ".")
 	},
