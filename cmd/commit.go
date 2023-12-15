@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"sitriproject/sitri/sitrilib"
 	"strings"
 	"unsafe"
@@ -74,7 +73,6 @@ var commitCmd = &cobra.Command{
 
 			walker := func(path string, info os.FileInfo, err error) error {
 				fmt.Printf("Zipping file %#v\n", path)
-				os := runtime.GOOS
 				fp := strings.Split(path, os.PathSeperator)
 				name := fp[len(fp)-1]
 				if stringInSlice(name, strignorefiles) {
