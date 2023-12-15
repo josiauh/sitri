@@ -64,6 +64,12 @@ var commitCmd = &cobra.Command{
 			} else {
 				strignoref = []byte(``)
 			}
+			if err != nil {
+				errorColor.Printf("❌ Could not create a commit zip!")
+				errorColor.Printf("Full error:")
+				errorColor.Printf(err.Error())
+				os.Exit(1)
+			}
 			strignore := string(strignoref)
 			strignorefiles := strings.Split(strignore, "\n")
 			defer file.Close()
@@ -73,7 +79,7 @@ var commitCmd = &cobra.Command{
 
 			walker := func(path string, info os.FileInfo, err error) error {
 				fmt.Printf("Zipping file %#v\n", path)
-				fp := strings.Split(path, os.PathSeperator)
+				fp := strings.Split(path, string(os.PathSeparator))
 				name := fp[len(fp)-1]
 				if stringInSlice(name, strignorefiles) {
 					return nil
