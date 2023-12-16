@@ -38,6 +38,9 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
+var git bool
+var message string
+
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
@@ -51,7 +54,15 @@ var commitCmd = &cobra.Command{
 		}
 		fmt.Println("📦 Commiting your Sitri project...")
 		cmtName := generate(6)
-		if !contains(args, "--git") {
+		if !git {
+			msgFile, err := os.Create(".sitri/commit-msg")
+			if err != nil {
+				errorColor.Printf("❌ Could not create a commit message file!")
+				errorColor.Printf("Full error:")
+				errorColor.Printf(err.Error())
+				os.Exit(1)
+			}
+			msgFile.WriteString(message)
 			file, err := os.Create(".sitri/commits/commit-" + cmtName + ".zip")
 			strignoref, ferr := os.ReadFile(".sitriignore")
 			if ferr != nil {
@@ -121,7 +132,7 @@ var commitCmd = &cobra.Command{
 		}
 		if info[1] != "gitDisabled: true" {
 			exec.Command("\"C:/Program Files/Git/cmd/git.exe\"", "add", ".")
-			exec.Command("\"C:/Program Files/Git/cmd/git.exe\"", "commit", "-m", "\"🍊 Commited from Sitri ("+cmtName+")\"")
+			exec.Command("\"C:/Program Files/Git/cmd/git.exe\"", "commit", "-m", "\"🍊 Commited from Sitri ("+cmtName+" "+message+")\"")
 		}
 		fmt.Printf("🍊 Commit created!")
 	},
@@ -138,5 +149,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	commitCmd.Flags().Bool("git", false, "Only use Git.")
+	commitCmd.Flags().BoolVarP(&git, "git", "g", false, "Only use Git.")
+	commitCmd.Flags().StringVarP(&message, "message", "m", "No commit message.", "")
 }
